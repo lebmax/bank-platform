@@ -9,6 +9,7 @@ dependencies:
 
   - name: keycloak-external
     version: "0.1.0"
+    repository: "file://./charts/keycloak-external"
     condition: keycloak-external.enabled
 
   - name: account-service
@@ -60,3 +61,8 @@ dependencies:
     version: "3.2.0-final"
     repository: "file://./charts/debezium-operator"
     condition: debezium-operator.enabled
+
+  - name: zipkin
+    version: "0.7.0"
+    repository: "file://./charts/zipkin"
+    condition: zipkin.enabled

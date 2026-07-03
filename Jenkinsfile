@@ -130,6 +130,7 @@ pipeline {
                         --set kafka.enabled=true \\
                         \\
                         --set debezium-operator.enabled=true \\
+                        --set zipkin.enabled=true \\
                         \\
                         --set account-db.enabled=true \\
                         --set account-db.auth.database=accounts \\

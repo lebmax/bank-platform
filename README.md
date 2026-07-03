@@ -47,6 +47,7 @@ helm upgrade --install bank ./helm/ \
   -f ./environments/test/values.yaml \
   --set kafka.enabled=true \
   --set debezium-operator.enabled=true \
+  --set zipkin.enabled=true \
   --set account-db.enabled=true \
   --set cash-db.enabled=true \
   --set transfer-db.enabled=true \
