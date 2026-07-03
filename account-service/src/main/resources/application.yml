@@ -14,6 +14,10 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    template:
+      observation-enabled: true    # Для Producer / KafkaTemplate
+#    listener:
+#      observation-enabled: true    # Для Consumer / @KafkaListener
 
   #  config:
 #    import: "optional:consul:${CONSUL_HOST:localhost}:${CONSUL_PORT:8500}"

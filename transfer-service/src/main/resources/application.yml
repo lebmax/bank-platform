@@ -82,6 +82,9 @@ spring:
     listener:
       ack-mode: manual
       shutdown-timeout: 30000
+      observation-enabled: true    # Для Consumer / @KafkaListener
+    template:
+      observation-enabled: true    # Для Producer / KafkaTemplate
 
 feign:
   httpclient:
