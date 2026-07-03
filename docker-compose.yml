@@ -69,6 +69,17 @@ services:
       - "${KAFKA_PORT}:9092"
 
 # ================================
+# Zipkin
+# ================================
+  bank-zipkin:
+    image: openzipkin/zipkin:latest
+    container_name: bank-zipkin
+    ports:
+      - "${ZIPKIN_PORT}:9411"
+    environment:
+      - STORAGE_TYPE=mem
+
+# ================================
 # Debezium
 # ================================
   bank-debezium:
