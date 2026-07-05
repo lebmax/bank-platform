@@ -1,6 +1,7 @@
 package ru.ugaforever.bank.account.service;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import jakarta.annotation.PostConstruct;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,11 @@ public class AccountService {
     private final AccountRepository repository;
     private final AccountMapper mapper;
     private final MeterRegistry meterNotificationRegistry;
+
+    @PostConstruct
+    public void init() {
+        meterNotificationRegistry.counter("notification_create_account").increment(0);
+    }
 
     public AccountResponseDto createAccount(AccountRequestDto dto) {
         Account account = mapper.toEntity(dto);
