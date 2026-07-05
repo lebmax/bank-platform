@@ -1,10 +1,13 @@
 package ru.ugaforever.bank.account.service;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.ugaforever.bank.account.mapper.AccountMapper;
 import ru.ugaforever.bank.account.model.Account;
@@ -42,6 +45,9 @@ public class AccountServiceTest {
 
     @Mock
     private NotificationProducer notificationProducer;
+
+    @Spy
+    private MeterRegistry meterRegistry = new SimpleMeterRegistry();
 
     @InjectMocks
     private AccountService service;

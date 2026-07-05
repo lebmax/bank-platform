@@ -1,6 +1,7 @@
 package ru.ugaforever.bank.account.service;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -37,11 +38,11 @@ public class AccountService {
     private final NotificationProducer notificationProducer;
     private final AccountRepository repository;
     private final AccountMapper mapper;
-    private final MeterRegistry meterNotificationRegistry;
+    private final MeterRegistry meterRegistry;
 
     @PostConstruct
     public void init() {
-        meterNotificationRegistry.counter("notification_create_account").increment(0);
+        meterRegistry.counter("notification.account.create").increment(0);
     }
 
     public AccountResponseDto createAccount(AccountRequestDto dto) {
@@ -53,7 +54,7 @@ public class AccountService {
                 .message(String.format("Created new account: login=%s", saved.getLogin()))
                 .build();
         notificationProducer.sendNotification(notificationRequestDto);
-        meterNotificationRegistry.counter("notification_create_account").increment();
+        meterRegistry.counter("notification.account.create").increment();
 
         return mapper.toDto(saved);
     }
@@ -62,12 +63,17 @@ public class AccountService {
 
         log.debug("Get account: login={}", login);
 
-        return repository.findByLogin(login)
+        Timer timer = Timer.builder("account.get.time")
+                .description("Time to get account by login")
+                .tag("operation", "getAccount")
+                .register(meterRegistry);
+
+        return timer.record(() -> repository.findByLogin(login)
                 .map(mapper::toDto)
                 .orElseThrow(() -> {
                     log.warn("Account not found: {}", login);
                     return new AccountNotFoundException(login);
-                });
+                }));
     }
 
     public List<AccountResponseDto> getAll() {
