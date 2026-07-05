@@ -93,3 +93,4 @@ logging:
   level:
     org.springframework.cloud.consul: DEBUG
     org.springframework.boot.context.config: DEBUG
+    org.apache.logging.log4j: DEBUG
