@@ -85,7 +85,15 @@ management:
       endpoint: ${ZIPKIN_ENDPOINT:http://localhost:9411/api/v2/spans}
   tracing:
     sampling:
-      probability: 1
+      probability: 1.0
+    propagation:
+      type: w3c
+  observations:
+    enable:
+      spring:
+        boot:
+          actuator:
+            health: true
 
 logging:
   level:
