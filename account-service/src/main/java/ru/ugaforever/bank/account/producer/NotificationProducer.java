@@ -1,6 +1,7 @@
 package ru.ugaforever.bank.account.producer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micrometer.core.annotation.Counted;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.RecordMetadata;
@@ -31,6 +32,7 @@ public class NotificationProducer {
             maxAttempts = 3,
             backoff = @Backoff(delay = 1000, multiplier = 2, maxDelay = 5000)
     )
+    @Counted
     public void sendNotification(NotificationRequestDto request){
 
         try {
