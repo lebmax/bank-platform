@@ -79,6 +79,26 @@ services:
     environment:
       - STORAGE_TYPE=mem
 
+  # ================================
+  # Prometheus
+  # ================================
+  bank-prometheus:
+    image: prom/prometheus
+    container_name: bank-prometheus
+    ports:
+      - "${PROMETHEUS_PORT}:9090"
+
+  # ================================
+  # Grafana
+  # ================================
+  bank-grafana:
+    image: grafana/grafana
+    container_name: bank-grafana
+    ports:
+      - "${GRAFANA_PORT}:3000"
+    depends_on:
+      - bank-prometheus
+
 # ================================
 # Debezium
 # ================================
