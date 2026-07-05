@@ -88,12 +88,6 @@ management:
       probability: 1.0
     propagation:
       type: w3c
-  observations:
-    enable:
-      spring:
-        boot:
-          actuator:
-            health: true
 
 logging:
   level:
