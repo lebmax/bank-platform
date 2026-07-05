@@ -91,6 +91,15 @@ services:
       - ./prometheus:/etc/prometheus
 
   # ================================
+  # Alert Manager
+  # ================================
+  bank-alertmanager:
+    image: prom/alertmanager
+    container_name: alertmanager
+    ports:
+      - "${ALERTMANAGER_PORT}:9093"
+
+  # ================================
   # Grafana
   # ================================
   bank-grafana:
