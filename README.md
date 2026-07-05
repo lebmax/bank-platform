@@ -1,14 +1,13 @@
 # Микросервисное приложение «Банк» с использованием Spring Boot, интеграций Spring Cloud и паттернов микросервисной архитектуры.
 
 ## Задание
-Доработать микросервисное приложение «Банк» (https://github.com/ugaforever/bank-platform-microservices/tree/module_three_sprint_ten_branch):
-1. Добавить в проект распределённую платформу Apache Kafka.
-2. Реализовать отправку уведомлений в сервис Notifications через Apache Kafka.
+Доработать микросервисное приложение «Банк» (https://github.com/ugaforever/bank-platform-microservices/tree/module_three_sprint_eleven_branch):
+1. Трейсинг запросов с использованием системы распределённых трассировок Zipkin.
+2. Мониторинги/графики метрик и алерты с использованием Prometheus и Grafana.
+3. Логирование с использованием ELK-стека.
 
-Ранее реализованный паттерн SAGA с оркестрацией с использованием Kafka остался в проекте.
-
-## Обновленная схема с Kafka
-![Architecture Diagram](images/arch2.png)
+## Обновленная схема с трейсингом, метриками и логгированием
+![Architecture Diagram](images/arch3.png)
 
 
 ## Запуск
@@ -69,6 +68,9 @@ sudo nano /etc/hosts
 Интеграция в Jenkins (Jenkinsfile).
 
 ## Что выполнено
-Смотри pull-реквесты.
+В описании pull-реквестов.
+
+## Обратная связь / ревью
+В чате практикума.
 
 
