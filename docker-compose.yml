@@ -87,6 +87,8 @@ services:
     container_name: bank-prometheus
     ports:
       - "${PROMETHEUS_PORT}:9090"
+    volumes:
+      - ./prometheus:/etc/prometheus
 
   # ================================
   # Grafana

@@ -313,6 +313,14 @@ prometheus:
   prometheusSpec:
     retention: 7d
     retentionSize: "5GB"
+    additionalScrapeConfigs:
+      - job_name: 'account-service'
+        metrics_path: '/actuator/prometheus'
+        scrape_interval: 15s
+        static_configs:
+          - targets: [ 'account-service:9005' ]
+            labels:
+              application: 'account-service'
 
     storageSpec:
       volumeClaimTemplate:
