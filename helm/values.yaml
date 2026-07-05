@@ -303,3 +303,61 @@ zipkin:
     limits:
       cpu: 500m
       memory: 1024Mi
+
+prometheus:
+  enabled: true
+  service:
+    type: ClusterIP
+    port: 9090
+
+  prometheusSpec:
+    retention: 7d
+    retentionSize: "5GB"
+
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 5Gi
+
+  alertmanager:
+    enabled: true
+  nodeExporter:
+    enabled: false
+  kubeStateMetrics:
+    enabled: false
+  pushgateway:
+    enabled: false
+
+grafana:
+  enabled: true
+
+#  adminPassword: НЕ указываем явно. берем сгенерированный пароль из kubectl
+
+  service:
+    type: ClusterIP
+    port: 3000
+
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        - name: Prometheus
+          type: prometheus
+          url: http://{{ .Release.Name }}-prometheus:9090
+          access: proxy
+          isDefault: true
+
+  persistence:
+    enabled: true
+    size: 1Gi
+
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi

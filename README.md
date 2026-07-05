@@ -48,6 +48,8 @@ helm upgrade --install bank ./helm/ \
   --set kafka.enabled=true \
   --set debezium-operator.enabled=true \
   --set zipkin.enabled=true \
+  --set prometheus.enabled=true \
+  --set grafana.enabled=true \
   --set account-db.enabled=true \
   --set cash-db.enabled=true \
   --set transfer-db.enabled=true \
