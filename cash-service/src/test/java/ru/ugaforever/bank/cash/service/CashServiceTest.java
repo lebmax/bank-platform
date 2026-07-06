@@ -8,13 +8,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.ugaforever.bank.cash.mapper.CashMapper;
 import ru.ugaforever.bank.cash.model.Cash;
-import ru.ugaforever.bank.cash.producer.NotificationProducer;
 import ru.ugaforever.bank.cash.repository.CashRepository;
 import ru.ugaforever.bank.chassis.client.AccountClient;
 import ru.ugaforever.bank.chassis.dto.account.AccountResponseDto;
 import ru.ugaforever.bank.chassis.dto.cash.CashAction;
 import ru.ugaforever.bank.chassis.dto.cash.CashResponseDto;
 import ru.ugaforever.bank.chassis.dto.cash.DepositRequestDto;
+import ru.ugaforever.bank.chassis.kafka.NotificationProducer;
 
 import java.math.BigDecimal;
 import java.time.Instant;

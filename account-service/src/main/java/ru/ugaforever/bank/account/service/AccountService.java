@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.ugaforever.bank.account.producer.NotificationProducer;
 import ru.ugaforever.bank.chassis.dto.account.AccountRequestDto;
 import ru.ugaforever.bank.chassis.dto.account.AccountResponseDto;
 import ru.ugaforever.bank.chassis.dto.account.AccountUpdateDto;
@@ -21,6 +20,7 @@ import ru.ugaforever.bank.account.model.Account;
 import ru.ugaforever.bank.account.repository.AccountRepository;
 import ru.ugaforever.bank.chassis.exception.BusinessRuleException;
 import ru.ugaforever.bank.chassis.exception.ValidationException;
+import ru.ugaforever.bank.chassis.kafka.NotificationProducer;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -50,7 +50,7 @@ public class AccountService {
                 .source(NotificationSource.ACCOUNT_SERVICE)
                 .message(String.format("Created new account: login=%s", saved.getLogin()))
                 .build();
-        notificationProducer.sendNotification(notificationRequestDto);
+        notificationProducer.sendNotificationSync(notificationRequestDto);
         meterRegistry.counter("notification.account.create").increment();
 
         return mapper.toDto(saved);
@@ -108,7 +108,7 @@ public class AccountService {
                 .source(NotificationSource.ACCOUNT_SERVICE)
                 .message(String.format("Account updated: login=%s", saved.getLogin()))
                 .build();
-        notificationProducer.sendNotification(notificationRequestDto);
+        notificationProducer.sendNotificationSync(notificationRequestDto);
         log.info("Notification sent: login={}, type=UPDATE", account.getLogin());
 
         log.info("Update completed: login={}, fields={}", login, updateDto);
