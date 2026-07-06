@@ -19,7 +19,10 @@ public class Cash {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String login;
+
+    @Enumerated(EnumType.STRING)
     private CashAction action;
+
     private BigDecimal amount;
 
     @Column(nullable = false, updatable = false)
