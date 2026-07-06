@@ -246,10 +246,8 @@ debezium-operator:
 
   replicaCount: 1
 
-  image:
-    repository: quay.io/debezium/operator
-    tag: "3.2.0.Final"
-    pullPolicy: IfNotPresent
+  image: "quay.io/debezium/operator:3.2.0.Final"
+  pullPolicy: IfNotPresent
 
   service:
     type: ClusterIP
