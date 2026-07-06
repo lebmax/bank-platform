@@ -28,7 +28,7 @@ public class Cash {
     @Column(nullable = false, updatable = false)
     private Instant actionAt;
 
-    @Column(unique = true)
+    @Column(nullable = false, unique = true)
     private String idempotencyKey;
 
     @PrePersist

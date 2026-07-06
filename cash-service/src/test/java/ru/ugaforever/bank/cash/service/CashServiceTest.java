@@ -48,7 +48,7 @@ public class CashServiceTest {
 
 
     @Test
-    @DisplayName("deposit — должен вернуть инофрмацию о депозите")
+    @DisplayName("deposit — должен вернуть информацию о депозите")
     void shouldReturnDeposit() {
 
         DepositRequestDto request = DepositRequestDto.builder()
