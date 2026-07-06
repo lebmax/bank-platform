@@ -161,7 +161,7 @@ public class CashService {
         log.info("Notification sent: login={}, type=WITHDRAWAL", account.getLogin());
 
         log.info("Withdraw completed: login={}, amount={}, newBalance={}",
-                request.getLogin(), request.getAmount(), account.getBalance().subtract(request.getAmount()));
+                request.getLogin(), request.getAmount(), account.getBalance());
 
         return mapper.toDto(cash);
     }
