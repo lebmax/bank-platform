@@ -74,7 +74,7 @@
                 <scope>provided</scope>
             </dependency>
             <dependency>
-                <groupId>ru.ugaforever.bank</groupId>
+                <groupId>ru.ugaforever.bank.chassis</groupId>
                 <artifactId>chassis</artifactId>
                 <version>${project.version}</version>
             </dependency>
