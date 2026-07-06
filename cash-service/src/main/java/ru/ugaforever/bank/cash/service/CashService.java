@@ -93,7 +93,7 @@ public class CashService {
         log.info("Notification sent: login={}, type=DEPOSIT", account.getLogin());
 
         log.info("Deposit completed: login={}, amount={}, newBalance={}",
-                request.getLogin(), request.getAmount(), account.getBalance().add(request.getAmount()));
+                request.getLogin(), request.getAmount(), account.getBalance());
 
         return mapper.toDto(cash);
     }
