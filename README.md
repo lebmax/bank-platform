@@ -10,6 +10,32 @@
 ![Architecture Diagram](images/arch3.png)
 
 
+## Компоненты
+| name                 | docker                    | port |
+|----------------------|---------------------------|------|
+| front                | bank-front                | 9000 |
+| gateway              | bank-gateway              | 9001 |
+| keycloak             | bank-keycloak             | 9002 |
+| transfer service     | bank-transfer-service     | 9003 |
+| cash service         | bank-cash-service         | 9004 |
+| account service      | bank-account-service      | 9005 |
+| notification service | bank-notification-service | 9006 |
+| consul               | bank-consul               | 8500 |
+| transfer db          | bank-transfer-db          | 5433 |
+| cash db              | bank-cash-db              | 5434 |
+| account db           | bank-account-db           | 5435 |
+| notification db      | bank-notification-db      | 5436 |
+| debezium             | bank-debezium             | 8083 |
+| elasticsearch        | bank-elasticsear          | 9200 |
+| kibana               | bank-kibana               | 5601 |
+| logstash             | bank-logstash             | 5044 |
+| zipkin               | bank-zipkin               | 9411 |
+| prometheus           | bank-prometheus           | 9090 |
+| kafka                | bank-kafka                | 9092 |
+| alertmanager         | bank-alertmanager         | 9093 |
+| grafana              | bank-grafana              | 3000 |
+
+
 ## Запуск
 1. Jenkins
 ```bash
