@@ -26,7 +26,7 @@ spec:
               
               KAFKA_BOOTSTRAP="${SPRING_KAFKA_BOOTSTRAP_SERVERS:-bank-kafka:9092}"
               
-              until kafka-topics.sh --bootstrap-server $KAFKA_BOOTSTRAP --list > /dev/null 2>&1; do
+              until kafka-topics.sh --bootstrap-server "$KAFKA_BOOTSTRAP" --list > /dev/null 2>&1; do
                 sleep 5
               done
                             
@@ -34,27 +34,38 @@ spec:
                 TOPIC=$1
                 PARTITIONS=${2:-1}
                 REPLICATION=${3:-1}
+                CONFIG=${4:-""}
 
-                if kafka-topics.sh --bootstrap-server $KAFKA_BOOTSTRAP --list | grep -q "^$TOPIC$"; then
+                if kafka-topics.sh --bootstrap-server "$KAFKA_BOOTSTRAP" --list | fgrep -q "^$TOPIC$"; then
                   echo "Topic $TOPIC already exists"
                 else
                   echo "Creating topic: $TOPIC"
-                  kafka-topics.sh --bootstrap-server $KAFKA_BOOTSTRAP \
-                    --create --topic "$TOPIC" \
-                    --partitions "$PARTITIONS" \
-                    --replication-factor "$REPLICATION"
-                  echo "Topic $TOPIC created"
+                  
+                  CMD="kafka-topics.sh --bootstrap-server '$KAFKA_BOOTSTRAP' \                       
+                    --create --topic '$TOPIC' \
+                    --partitions '$PARTITIONS' \
+                    --replication-factor '$REPLICATION'"
+                  
+                  if [ -n "$CONFIG" ]; then
+                    echo "Config: $CONFIG"                    
+                    IFS=',' read -ra CONFIG_ARRAY <<< "$CONFIG"
+                    for config in "${CONFIG_ARRAY[@]}"; do
+                      CMD="$CMD --config $config"
+                    done
+                  fi
+              
+                  eval "$CMD"
+                  echo "Topic $TOPIC created successfully"
                 fi
               }
-              
-              create_topic "bank.notification" "1" "1"
-              create_topic "bank.notification.dlt" "1" "1"
-              create_topic "bank.transfer" "1" "1"
-              create_topic "bank.transfer.dlt" "1" "1"
+
+              {{- range .Values.kafka.topics.list }}
+              create_topic "{{ .name }}" "{{ .partitions }}" "{{ .replicationFactor }}" "{{ .config | default "" }}"
+              {{- end }}
               
               echo "All topics created successfully!"
               echo "Current topics:"
-              kafka-topics.sh --bootstrap-server $KAFKA_BOOTSTRAP --list
+              kafka-topics.sh --bootstrap-server "$KAFKA_BOOTSTRAP" --list
           volumeMounts:
             - name: topics-config
               mountPath: /config

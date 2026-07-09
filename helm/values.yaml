@@ -179,6 +179,7 @@ kafka:
   enabled: true
   topics:
     enabled: true
+
     list:
       - name: bank.notification
         partitions: 1
