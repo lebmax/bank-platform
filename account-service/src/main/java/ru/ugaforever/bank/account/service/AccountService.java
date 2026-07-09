@@ -83,6 +83,11 @@ public class AccountService {
     }
 
     public AccountResponseDto updateAccount(String login, AccountUpdateDto updateDto) {
+
+        if (updateDto == null) {
+            throw new ValidationException("Account update data cannot be null");
+        }
+
         log.info("Update account: login={}, fields={}", login, updateDto);
 
         if (!updateDto.hasUpdates()) {

@@ -158,7 +158,8 @@ public class AccountServiceTest {
     void shouldThrowExceptionWhenUpdateDtoIsNull() {
         // when & then
         assertThatThrownBy(() -> service.updateAccount(LOGIN, null))
-                .isInstanceOf(NullPointerException.class);
+                .isInstanceOf(ValidationException.class)
+                .hasMessage("Account update data cannot be null");
     }
 
 }
