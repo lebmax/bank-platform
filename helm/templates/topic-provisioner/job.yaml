@@ -26,35 +26,41 @@ spec:
               
               KAFKA_BOOTSTRAP="${SPRING_KAFKA_BOOTSTRAP_SERVERS:-bank-kafka:9092}"
               
-              until kafka-topics.sh --bootstrap-server "$KAFKA_BOOTSTRAP" --list > /dev/null 2>&1; do
+              while ! kafka-topics.sh --bootstrap-server "$KAFKA_BOOTSTRAP" --list > /dev/null 2>&1; do
                 sleep 5
               done
                             
               create_topic() {
-                TOPIC=$1
-                PARTITIONS=${2:-1}
-                REPLICATION=${3:-1}
-                CONFIG=${4:-""}
+                TOPIC="$1"
+                PARTITIONS="${2:-1}"
+                REPLICATION="${3:-1}"
+                CONFIG="${4:-}"
 
-                if kafka-topics.sh --bootstrap-server "$KAFKA_BOOTSTRAP" --list | fgrep -q "^$TOPIC$"; then
+                if kafka-topics.sh --bootstrap-server "$KAFKA_BOOTSTRAP" --list | grep -Fxq "$TOPIC"; then
                   echo "Topic $TOPIC already exists"
                 else
                   echo "Creating topic: $TOPIC"
-                  
-                  CMD="kafka-topics.sh --bootstrap-server '$KAFKA_BOOTSTRAP' \                       
-                    --create --topic '$TOPIC' \
-                    --partitions '$PARTITIONS' \
-                    --replication-factor '$REPLICATION'"
-                  
+
+                  set -- kafka-topics.sh \
+                    --bootstrap-server "$KAFKA_BOOTSTRAP" \
+                    --create \
+                    --topic "$TOPIC" \
+                    --partitions "$PARTITIONS" \
+                    --replication-factor "$REPLICATION"
+
                   if [ -n "$CONFIG" ]; then
-                    echo "Config: $CONFIG"                    
-                    IFS=',' read -ra CONFIG_ARRAY <<< "$CONFIG"
-                    for config in "${CONFIG_ARRAY[@]}"; do
-                      CMD="$CMD --config $config"
+                    echo "Config: $CONFIG"
+                    OLD_IFS="$IFS"
+                    IFS=','
+                    for config_item in $CONFIG; do
+                      set -- "$@" --config "$config_item"
                     done
+                    IFS="$OLD_IFS"
                   fi
               
-                  eval "$CMD"
+                  # Выполняем
+                  "$@"
+              
                   echo "Topic $TOPIC created successfully"
                 fi
               }
