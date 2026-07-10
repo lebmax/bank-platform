@@ -36,7 +36,6 @@ import static org.mockito.Mockito.*;
 public class NotificationConsumerMockTest {
 
     private static final String NOTIFICATION_MESSAGE = "login=test, type=DEPOSIT, amount=100.00, newBalance=500.00";
-    private static final String INVALID_JSON = "invalid json message";
     private static final String TOPIC = "bank.notification";
     private static final String DLT_TOPIC = "bank.notification.dlt";
     private static final String GROUP_ID = "notification-group";
@@ -79,7 +78,7 @@ public class NotificationConsumerMockTest {
                 .send(eq(DLT_TOPIC), anyString());
 
         // Act - Consumer получит сообщение и попытается отправить в DLT
-        realKafkaTemplate.send(TOPIC, INVALID_JSON).get(10, TimeUnit.SECONDS);
+        realKafkaTemplate.send(TOPIC, NOTIFICATION_MESSAGE).get(10, TimeUnit.SECONDS);
 
         Thread.sleep(5000);
 
@@ -92,7 +91,7 @@ public class NotificationConsumerMockTest {
                     assertThat(dlqRepository.count()).isEqualTo(1);
 
                     DeadLetterMessage dlqMessage = dlqRepository.findAll().get(0);
-                    assertThat(dlqMessage.getMessage()).isEqualTo(INVALID_JSON);
+                    assertThat(dlqMessage.getMessage()).isEqualTo(NOTIFICATION_MESSAGE);
                     assertThat(dlqMessage.getErrorMessage()).contains("Kafka broker unavailable");
                 });
 
@@ -111,7 +110,7 @@ public class NotificationConsumerMockTest {
         }).when(mockKafkaTemplate).send(anyString(), anyString());
 
         // Act
-        realKafkaTemplate.send(TOPIC, INVALID_JSON).get(5, TimeUnit.SECONDS);
+        realKafkaTemplate.send(TOPIC, NOTIFICATION_MESSAGE).get(5, TimeUnit.SECONDS);
 
         // Assert
         await()
@@ -120,7 +119,7 @@ public class NotificationConsumerMockTest {
                     assertThat(dlqRepository.count()).isEqualTo(1);
 
                     DeadLetterMessage dlqMessage = dlqRepository.findAll().get(0);
-                    assertThat(dlqMessage.getMessage()).isEqualTo(INVALID_JSON);
+                    assertThat(dlqMessage.getMessage()).isEqualTo(NOTIFICATION_MESSAGE);
                     assertThat(dlqMessage.getErrorMessage()).isNotNull();
                 });
     }

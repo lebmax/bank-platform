@@ -36,6 +36,7 @@ import static org.mockito.Mockito.*;
 class NotificationConsumerRealTest {
 
     private static final String NOTIFICATION_MESSAGE = "login=test, type=DEPOSIT, amount=100.00, newBalance=500.00";
+    private static final String INVALID_JSON = "invalid json message";
     private static final String TOPIC = "bank.notification";
     private static final String DLT_TOPIC = "bank.notification.dlt";
     private static final String GROUP_ID = "notification-group";
@@ -104,11 +105,8 @@ class NotificationConsumerRealTest {
     @DisplayName("Должен отправить невалидное сообщение в DLT топик Kafka")
     void shouldSendInvalidMessageToDltKafka() throws Exception {
 
-        // Arrange
-        String invalidJson = "invalid json message";
-
         // Act
-        kafkaTemplate.send(TOPIC, invalidJson).get(5, TimeUnit.SECONDS);
+        kafkaTemplate.send(TOPIC, INVALID_JSON).get(5, TimeUnit.SECONDS);
 
         // Assert
         await()
