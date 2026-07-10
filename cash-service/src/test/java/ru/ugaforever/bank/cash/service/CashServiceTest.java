@@ -3,8 +3,7 @@ package ru.ugaforever.bank.cash.service;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.ugaforever.bank.cash.mapper.CashMapper;
 import ru.ugaforever.bank.cash.model.Cash;
@@ -14,6 +13,8 @@ import ru.ugaforever.bank.chassis.dto.account.AccountResponseDto;
 import ru.ugaforever.bank.chassis.dto.cash.CashAction;
 import ru.ugaforever.bank.chassis.dto.cash.CashResponseDto;
 import ru.ugaforever.bank.chassis.dto.cash.DepositRequestDto;
+import ru.ugaforever.bank.chassis.dto.notification.NotificationRequestDto;
+import ru.ugaforever.bank.chassis.dto.notification.NotificationSource;
 import ru.ugaforever.bank.chassis.kafka.NotificationProducer;
 
 import java.math.BigDecimal;
@@ -46,6 +47,8 @@ public class CashServiceTest {
     @InjectMocks
     private CashService service;
 
+    @Captor
+    private ArgumentCaptor<NotificationRequestDto> notificationCaptor;
 
     @Test
     @DisplayName("deposit — должен вернуть информацию о депозите")
@@ -91,5 +94,13 @@ public class CashServiceTest {
         assertThat(result.getActionAt()).isInstanceOf(Instant.class);
 
         verify(accountClient, times(1)).deposit(eq(LOGIN), any(DepositRequestDto.class));
+        verify(notificationProducer, times(1)).sendNotificationSync(notificationCaptor.capture());
+
+        NotificationRequestDto capturedNotification = notificationCaptor.getValue();
+        assertThat(capturedNotification.getSource()).isEqualTo(NotificationSource.CASH_SERVICE);
+
+        String expectedMessage = String.format("login=%s, type=DEPOSIT, amount=%.2f, newBalance=%.2f",
+                LOGIN, AMOUNT, AMOUNT);
+        assertThat(capturedNotification.getMessage()).isEqualTo(expectedMessage);
     }
 }

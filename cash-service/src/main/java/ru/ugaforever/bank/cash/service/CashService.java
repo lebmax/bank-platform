@@ -87,7 +87,7 @@ public class CashService {
                 .message(String.format("login=%s, type=DEPOSIT, amount=%.2f, newBalance=%.2f",
                         request.getLogin(),
                         request.getAmount(),
-                        account.getBalance().add(request.getAmount())))
+                        account.getBalance()))
                 .build();
         notificationProducer.sendNotificationSync(notificationRequestDto);
         log.info("Notification sent: login={}, type=DEPOSIT", account.getLogin());
