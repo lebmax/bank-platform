@@ -1,3 +1,0 @@
----
-watchNamespaces: "JOSDK_ALL_NAMESPACES"
-image: "quay.io/debezium/operator:3.2.0.Final"
