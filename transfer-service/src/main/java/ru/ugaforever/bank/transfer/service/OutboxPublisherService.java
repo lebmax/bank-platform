@@ -8,13 +8,15 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.ugaforever.bank.chassis.dto.kafka.OutboxEvent;
 import ru.ugaforever.bank.transfer.metric.OutboxMetrics;
 import ru.ugaforever.bank.transfer.model.OutboxStatus;
 import ru.ugaforever.bank.transfer.model.TransferOutbox;
 import ru.ugaforever.bank.transfer.repository.OutboxRepository;
 
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -30,7 +32,6 @@ public class OutboxPublisherService {
     private static final String OUTBOX_TOPIC = "bank.transfer";
     private static final int BATCH_SIZE = 100;
     private static final int MAX_RETRIES = 5;
-    private static final long LOCK_TIMEOUT_MS = 5000;
 
     @Scheduled(
             fixedDelayString = "${outbox.publisher.fixed-delay:5000}",
@@ -41,7 +42,11 @@ public class OutboxPublisherService {
         log.info("Starting outbox publishing job");
 
         try {
-            List<TransferOutbox> messages = outboxRepository.findAll();
+            List<OutboxStatus> statuses = Arrays.asList(
+                    OutboxStatus.PENDING,
+                    OutboxStatus.FAILED
+            );
+            List<TransferOutbox> messages = outboxRepository.findByStatusIn(statuses);
 
             if (messages.isEmpty()) {
                 log.info("No outbox messages found");
@@ -59,15 +64,13 @@ public class OutboxPublisherService {
                     failedCount++;
                 }
 
-                // Лимит на одну итерацию
                 if (processedCount + failedCount >= BATCH_SIZE) {
                     log.info("Reached batch size limit, continuing next cycle");
                     break;
                 }
             }
 
-            log.info("Outbox publishing completed: processed={}, failed={}",
-                    processedCount, failedCount);
+            log.info("Outbox publishing completed: processed={}, failed={}", processedCount, failedCount);
 
         } catch (Exception e) {
             log.error("Error in outbox publishing job: {}", e.getMessage(), e);
@@ -76,8 +79,9 @@ public class OutboxPublisherService {
 
     @Transactional
     protected boolean processOutboxMessage(TransferOutbox message) {
-
         try {
+            message.setStatus(OutboxStatus.PROCESSING);
+
             String kafkaMessage = buildKafkaMessage(message);
 
             CompletableFuture<SendResult<String, String>> future = kafkaTemplate.send(OUTBOX_TOPIC, kafkaMessage);
@@ -104,10 +108,8 @@ public class OutboxPublisherService {
             outboxRepository.save(message);
             outboxMetrics.incrementFailed();
 
-            // Если превышен лимит ретраев
             if (message.getRetryCount() >= MAX_RETRIES) {
                 log.error("Message {} exceeded max retries {}", message.getId(), MAX_RETRIES);
-
                 // уведомление админу: telegram, email, sms
             }
 
@@ -115,15 +117,30 @@ public class OutboxPublisherService {
         }
     }
 
+    /**
+     * Формирует сообщение в формате Debezium, который ожидает SagaOrchestrator
+     * для совместивости в будущем
+     *
+     * Формат сообщения:
+     * {
+     *   "after": {
+     *     "transfer_id": 1,
+     *     "event_type": "DEPOSIT",
+     *     "payload": "{\"type\":\"deposit\",\"toLogin\":\"account-2\",\"amount\":100.0}"
+     *   }
+     * }
+     */
     private String buildKafkaMessage(TransferOutbox message) throws Exception {
 
-        OutboxEvent event = OutboxEvent.builder()
-                .transferId(message.getTransferId())
-                .eventType(message.getEventType())
-                .payload(message.getPayload())
-                .timestamp(message.getCreatedAt())
-                .build();
+        Map<String, Object> after = new LinkedHashMap<>();
+        after.put("transfer_id", message.getTransferId());
+        after.put("event_type", message.getEventType());
+        after.put("payload", message.getPayload());
 
-        return objectMapper.writeValueAsString(event);
+        Map<String, Object> root = new LinkedHashMap<>();
+        root.put("after", after);
+
+        return objectMapper.writeValueAsString(root);
+
     }
 }
